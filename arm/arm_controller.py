@@ -1,18 +1,18 @@
 """5-axis robotic arm controller.
 
-Instantiates one :class:`Servo` per axis using the pin assignments and
+Instantiates one :class:`ServoHAL` per axis using the pin assignments and
 limits defined in :mod:`arm.config`, and exposes a clean joint-level API
 for the live control loop.
 """
 
 from . import config
-from .servo import Servo
+from .hal.servo_hal import ServoHAL
 
 
 class RoboticArm:
     """Controller for a 5-axis robotic arm.
 
-    Joint indices and names mirror ``config.JOINT_NAMES``::
+    Joint indices::
 
         0  base
         1  shoulder
@@ -31,11 +31,11 @@ class RoboticArm:
     NUM_JOINTS = 5
 
     def __init__(self) -> None:
-        self._servos: list[Servo] = []
+        self._servos: list[ServoHAL] = []
         for i, pin in enumerate(config.SERVO_PINS):
             min_a, max_a = config.SERVO_LIMITS[i]
             self._servos.append(
-                Servo(
+                ServoHAL(
                     pin_num=pin,
                     min_angle=min_a,
                     max_angle=max_a,
@@ -52,7 +52,7 @@ class RoboticArm:
     def home(self) -> None:
         """Move all joints to the home (neutral) position."""
         for i, angle in enumerate(config.SERVO_HOME):
-            self._servos[i].move_to(angle)
+            self._servos[i].write_angle(angle)
 
     def move_joint(self, joint: int, angle: float) -> None:
         """Move a single joint to *angle* degrees.
@@ -68,7 +68,7 @@ class RoboticArm:
             raise IndexError(
                 f"joint index {joint} out of range [0, {self.NUM_JOINTS})"
             )
-        self._servos[joint].move_to(angle)
+        self._servos[joint].write_angle(angle)
 
     def move_all(self, angles: list) -> None:
         """Move all joints simultaneously.
@@ -81,7 +81,7 @@ class RoboticArm:
         """
         for i, angle in enumerate(angles):
             if i < self.NUM_JOINTS:
-                self._servos[i].move_to(angle)
+                self._servos[i].write_angle(angle)
 
     def get_angles(self) -> list:
         """Return the current commanded angle for every joint.
@@ -89,7 +89,7 @@ class RoboticArm:
         Returns:
             List of angles in degrees (``None`` for joints not yet moved).
         """
-        return [s.angle for s in self._servos]
+        return [s.current_angle for s in self._servos]
 
     def deinit(self) -> None:
         """Release all PWM hardware resources."""

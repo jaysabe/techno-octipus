@@ -1,44 +1,8 @@
-"""Unit tests for the high-level Servo and RoboticArm classes."""
-
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import tests.mock_machine  # noqa: F401, E402
+"""Unit tests for the RoboticArm controller."""
 
 import pytest
-from arm.servo import Servo
 from arm.arm_controller import RoboticArm
 from arm import config
-
-
-# ---------------------------------------------------------------------------
-# Servo
-# ---------------------------------------------------------------------------
-
-class TestServo:
-    def test_angle_none_before_move(self):
-        s = Servo(pin_num=13)
-        assert s.angle is None
-
-    def test_move_to_sets_angle(self):
-        s = Servo(pin_num=13)
-        s.move_to(45.0)
-        assert s.angle == 45.0
-
-    def test_move_to_clamps_to_min(self):
-        s = Servo(pin_num=13, min_angle=10.0, max_angle=170.0)
-        s.move_to(-5.0)
-        assert s.angle == 10.0
-
-    def test_move_to_clamps_to_max(self):
-        s = Servo(pin_num=13, min_angle=0.0, max_angle=90.0)
-        s.move_to(120.0)
-        assert s.angle == 90.0
-
-    def test_deinit(self):
-        s = Servo(pin_num=13)
-        s.deinit()  # should not raise
 
 
 # ---------------------------------------------------------------------------

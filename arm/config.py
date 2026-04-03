@@ -1,15 +1,6 @@
 # Servo pin assignments for the 5-axis robotic arm (ESP32 GPIO numbers)
 SERVO_PINS = [13, 12, 14, 27, 26]
 
-# Human-readable joint names (index matches SERVO_PINS)
-JOINT_NAMES = [
-    "base",
-    "shoulder",
-    "elbow",
-    "wrist_pitch",
-    "wrist_roll",
-]
-
 # Servo angle limits [min_angle, max_angle] in degrees
 SERVO_LIMITS = [
     (0, 180),   # Joint 0: Base rotation

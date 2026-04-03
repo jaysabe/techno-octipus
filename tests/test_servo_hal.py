@@ -1,11 +1,5 @@
 """Unit tests for the Servo HAL layer."""
 
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import tests.mock_machine  # noqa: F401, E402
-
 import pytest
 from arm.hal.servo_hal import ServoHAL
 

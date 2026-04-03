@@ -4,15 +4,6 @@ These tests run on CPython using the mock machine module so no ESP32
 hardware is needed.
 """
 
-import sys
-import os
-
-# Ensure repository root is on the path so ``arm`` imports work.
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-# Install mock machine module BEFORE importing any arm code.
-import tests.mock_machine  # noqa: F401, E402
-
 from tests.mock_machine import MockPWM
 from arm.hal.pwm_hal import PWMChannel
 
