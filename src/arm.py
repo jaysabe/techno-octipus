@@ -21,8 +21,10 @@ PIN_ELBOW     = 14
 PIN_GRIPPER   = 27
 
 PWM_FREQ      = 50          # Hz  (standard servo frequency)
-DUTY_MIN      = 40          # ~500 µs  → 0°   (1024-step duty cycle)
-DUTY_MAX      = 115         # ~2500 µs → 180° (1024-step duty cycle)
+# MicroPython PWM.duty() accepts 0–1023 (10-bit range).
+# At 50 Hz: duty 40 ≈ 500 µs pulse → 0°, duty 115 ≈ 2500 µs pulse → 180°
+DUTY_MIN      = 40          # 0°  position
+DUTY_MAX      = 115         # 180° position
 MOVE_DELAY_MS = 300         # ms to wait after each move so the servo settles
 
 
