@@ -9,8 +9,8 @@
 #   ELBOW   → GPIO 14
 #   GRIPPER → GPIO 27
 
-from machine import Pin, PWM
 import utime
+from machine import PWM, Pin
 
 # ---------------------------------------------------------------------------
 # Pin assignments – update these to match your physical wiring

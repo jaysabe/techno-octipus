@@ -10,11 +10,11 @@
 # When the loop exits the full action sequence is printed to the REPL
 # and saved to /action_log.txt on the ESP32 flash.
 
-from machine import Pin
 import utime
+from machine import Pin
 
-from logger import ActionLogger
 from arm import Arm
+from logger import ActionLogger
 
 # ---------------------------------------------------------------------------
 # Configuration

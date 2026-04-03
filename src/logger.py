@@ -68,7 +68,9 @@ class ActionLogger:
                     )
                     fh.write(line)
                 fh.write("\n")
-            print("[logger] saved {} entries to {}".format(len(self._entries), self.LOG_FILE))
+            print("[logger] saved {} entries to {}".format(
+                len(self._entries), self.LOG_FILE
+            ))
         except OSError as exc:
             print("[logger] ERROR writing log: {}".format(exc))
 
