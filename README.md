@@ -17,12 +17,6 @@ src/
   main.py               ← Entry point; runs the live loop and persists the action log
   arm.py                ← Servo/motor helpers (Joint + Arm classes)
   logger.py             ← Action-sequence logger (ActionLogger)
-tests/
-  conftest.py           ← Shared pytest setup (path + machine mock)
-  mock_machine.py       ← CPython mock of machine.Pin / machine.PWM
-  test_pwm_hal.py       ← Unit tests for PWMChannel
-  test_servo_hal.py     ← Unit tests for ServoHAL
-  test_arm.py           ← Unit tests for RoboticArm
 ```
 
 ## Architecture
@@ -91,12 +85,3 @@ timestamp relative to session start.
 | `log.save()` | Append the session to `/action_log.txt` on flash |
 | `log.clear()` | Reset in-memory log (file untouched) |
 | `log.entries` | Read-only list of recorded entries |
-
-## Running tests (CPython)
-
-No ESP32 hardware needed — the `machine` module is mocked automatically:
-
-```bash
-pip install pytest
-pytest tests/ -v
-```
