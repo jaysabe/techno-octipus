@@ -1,14 +1,4 @@
 # main.py – Entry point for the techno-octipus ESP32 arm controller
-#
-# Flash this file (and logger.py + arm.py) to the ESP32 root with:
-#   mpremote cp src/logger.py src/arm.py src/main.py :
-#
-# The live loop runs until:
-#   • the STOP_PIN button is pulled LOW, or
-#   • a KeyboardInterrupt is sent from the REPL (Ctrl-C).
-#
-# When the loop exits the full action sequence is printed to the REPL
-# and saved to /action_log.txt on the ESP32 flash.
 
 import utime
 from machine import Pin
@@ -16,26 +6,12 @@ from machine import Pin
 from arm import Arm
 from logger import ActionLogger
 
-# ---------------------------------------------------------------------------
-# Configuration
-# ---------------------------------------------------------------------------
-
 STOP_PIN      = 0           # GPIO0 = BOOT button on most DevKit boards
 LOOP_DELAY_MS = 100         # ms between live-loop iterations
 
-# ---------------------------------------------------------------------------
-# Live loop
-# ---------------------------------------------------------------------------
 
 def live_loop(arm: Arm, log: ActionLogger):
-    """Main control loop.
-
-    Runs a repeating sequence of arm movements.  Every movement is
-    recorded via ``log.record()`` so the full session can be replayed or
-    reviewed after exit.
-
-    Add / modify the movement calls below to match your use-case.
-    """
+    """Repeating arm movement sequence; logs every action."""
     stop_btn = Pin(STOP_PIN, Pin.IN, Pin.PULL_UP)
 
     print("[main] Live loop started.  Press BOOT button or Ctrl-C to stop.")
@@ -46,12 +22,10 @@ def live_loop(arm: Arm, log: ActionLogger):
     step = 0
 
     while True:
-        # ---- stop condition ----
         if stop_btn.value() == 0:          # button pulled LOW
             print("[main] Stop button pressed – exiting live loop.")
             break
 
-        # ---- movement sequence (edit to suit your application) ----
         if step == 0:
             arm.move_base(45)
             log.record("move_base", angle=45)
@@ -81,10 +55,6 @@ def live_loop(arm: Arm, log: ActionLogger):
 
         utime.sleep_ms(LOOP_DELAY_MS)
 
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main():
     arm = Arm()

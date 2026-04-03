@@ -1,62 +1,82 @@
 # techno-octipus
+
 Mechatronics practice and source code for an ESP32-powered robotic arm project,
 written in **MicroPython**.
-
----
 
 ## Project structure
 
 ```
+main.py                 ← HAL live loop (runs on boot)
+arm/
+  config.py             ← Pin assignments, servo limits, PWM settings
+  arm_controller.py     ← 5-axis RoboticArm class
+  hal/
+    pwm_hal.py          ← Low-level PWM HAL (wraps machine.PWM)
+    servo_hal.py        ← Servo HAL (angle → pulse width → duty cycle)
 src/
-  main.py    – entry point; runs the live loop and persists the action log
-  arm.py     – servo / motor helpers (Joint + Arm classes)
-  logger.py  – action-sequence logger (ActionLogger)
+  main.py               ← Entry point; runs the live loop and persists the action log
+  arm.py                ← Servo/motor helpers (Joint + Arm classes)
+  logger.py             ← Action-sequence logger (ActionLogger)
 ```
 
----
+## Architecture
 
-## Hardware
+The HAL-based module (`arm/`) uses a layered design:
 
-| Joint    | GPIO |
-|----------|------|
-| Base     | 13   |
-| Shoulder | 12   |
-| Elbow    | 14   |
-| Gripper  | 27   |
-| Stop btn | 0 (BOOT button) |
+```
+main.py  →  RoboticArm  →  ServoHAL ×5  →  PWMChannel  →  machine.PWM
+```
 
-Adjust the `PIN_*` constants in `src/arm.py` and `STOP_PIN` in `src/main.py`
-to match your wiring.
+Each layer has a single responsibility: `RoboticArm` manages joints,
+`ServoHAL` converts degrees to pulse widths (500–2500 µs @ 50 Hz), and
+`PWMChannel` writes duty cycles to the ESP32 hardware. Older MicroPython
+builds using `PWM.duty()` (0–1023) are detected and handled automatically.
+Motion commands are fed in through the `_read_command` stub in `main.py`
+(UART, Wi-Fi, BLE, etc.).
 
----
+The simpler `src/` module drives joints directly via `PWM.duty()` and adds an
+`ActionLogger` that timestamps every movement and persists the session to
+`/action_log.txt` on flash. The loop runs until the BOOT button (GPIO 0) is
+pressed or a `KeyboardInterrupt` is received.
 
-## Flashing to the ESP32
+## Hardware wiring (default)
 
-1. Install MicroPython firmware on your board:
-   <https://micropython.org/download/ESP32_GENERIC/>
+| Joint       | GPIO | Notes                    |
+|-------------|------|--------------------------|
+| Base        | 13   |                          |
+| Shoulder    | 12   |                          |
+| Elbow       | 14   |                          |
+| Wrist pitch | 27   | HAL module only          |
+| Wrist roll  | 26   | HAL module only          |
+| Gripper     | 27   | `src/` module only       |
+| Stop button | 0    | BOOT button on DevKit    |
 
-2. Install `mpremote`:
-   ```bash
-   pip install mpremote
-   ```
+Adjust pin constants in `arm/config.py` (HAL module) or `src/arm.py` (src module).
 
-3. Copy source files to the board:
-   ```bash
-   mpremote cp src/logger.py src/arm.py src/main.py :
-   ```
+## Requirements
 
-4. Run:
-   ```bash
-   mpremote run src/main.py
-   # or reboot the board – MicroPython auto-runs main.py
-   ```
+- ESP32 board running **MicroPython ≥ 1.15** (ESP-IDF based build).
+- Standard hobby servos (50 Hz, 500–2500 µs pulse range).
 
----
+## Flashing to ESP32
+
+Install [mpremote](https://docs.micropython.org/en/latest/reference/mpremote.html), then:
+
+```bash
+# HAL module
+mpremote connect /dev/ttyUSB0 cp -r arm/ :
+mpremote connect /dev/ttyUSB0 cp main.py :main.py
+
+# src/ module
+mpremote cp src/logger.py src/arm.py src/main.py :
+```
+
+The device runs `main.py` automatically on the next reset.
 
 ## Action logger
 
-`ActionLogger` (in `src/logger.py`) records every movement made inside the
-live loop with a millisecond timestamp relative to session start.
+`ActionLogger` (`src/logger.py`) records every movement with a millisecond
+timestamp relative to session start.
 
 | Method | Description |
 |--------|-------------|
@@ -65,27 +85,3 @@ live loop with a millisecond timestamp relative to session start.
 | `log.save()` | Append the session to `/action_log.txt` on flash |
 | `log.clear()` | Reset in-memory log (file untouched) |
 | `log.entries` | Read-only list of recorded entries |
-
-Example log output (`log.dump()`):
-```
-=== Action Log (7 entries) ===
-[   0] +     0 ms  home  {}
-[   1] +   312 ms  move_base  angle=45
-[   2] +   625 ms  move_shoulder  angle=70
-...
-================================
-```
-
-The on-flash file (`/action_log.txt`) is appended every session so you can
-review the full history of movements after the board is powered off.
-
----
-
-## Live loop
-
-`live_loop()` in `src/main.py` runs until:
-- The **BOOT button** (GPIO 0) is pressed, **or**
-- A `KeyboardInterrupt` (Ctrl-C) is sent from the REPL.
-
-On exit the arm servos are de-energised, the sequence is printed, and the
-log is saved to flash automatically.

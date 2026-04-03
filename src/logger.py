@@ -1,14 +1,4 @@
 # logger.py – Action-sequence logger for ESP32 (MicroPython)
-#
-# Records every action taken inside the live loop and writes the full
-# sequence to a file on the ESP32 flash when the session ends.
-#
-# Usage:
-#   from logger import ActionLogger
-#   log = ActionLogger()
-#   log.record("move_base", angle=90)
-#   log.save()           # writes to flash
-#   log.dump()           # prints to REPL
 
 import utime
 
