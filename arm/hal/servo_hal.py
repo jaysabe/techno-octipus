@@ -1,13 +1,4 @@
-"""Servo hardware abstraction layer.
-
-Translates joint angles (in degrees) into PWM pulse widths and delegates
-to :class:`PWMChannel` for the actual hardware write.
-
-Pulse-width ↔ angle mapping (linear interpolation)::
-
-    min_pulse_us  →  min_angle
-    max_pulse_us  →  max_angle
-"""
+"""Servo hardware abstraction layer – translates angles to PWM pulse widths."""
 
 from .pwm_hal import PWMChannel
 

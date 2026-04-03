@@ -11,16 +11,30 @@ main.py                 ← Live control loop (runs on boot)
 arm/
   config.py             ← Pin assignments, servo limits, PWM settings
   arm_controller.py     ← 5-axis RoboticArm class
-  servo.py              ← High-level Servo abstraction
   hal/
     pwm_hal.py          ← Low-level PWM HAL (wraps machine.PWM)
     servo_hal.py        ← Servo HAL (angle → pulse width → duty cycle)
 tests/
+  conftest.py           ← Shared pytest setup (path + machine mock)
   mock_machine.py       ← CPython mock of machine.Pin / machine.PWM
   test_pwm_hal.py       ← Unit tests for PWMChannel
   test_servo_hal.py     ← Unit tests for ServoHAL
-  test_arm.py           ← Unit tests for Servo and RoboticArm
+  test_arm.py           ← Unit tests for RoboticArm
 ```
+
+## Architecture
+
+```
+main.py  →  RoboticArm  →  ServoHAL ×5  →  PWMChannel  →  machine.PWM
+```
+
+Each layer has a single responsibility: `RoboticArm` manages joints,
+`ServoHAL` converts degrees to pulse widths, and `PWMChannel` writes duty
+cycles to the ESP32 hardware.  Motion commands are fed in through the
+`_read_command` stub in `main.py` (UART, Wi-Fi, BLE, etc.).
+
+> **Firmware:** MicroPython ≥ 1.15 (ESP-IDF build). Older builds using
+> `PWM.duty()` (0–1023) are handled automatically via runtime detection.
 
 ## Hardware wiring (default)
 

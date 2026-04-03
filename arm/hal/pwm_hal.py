@@ -1,14 +1,4 @@
-"""Low-level PWM hardware abstraction layer for ESP32 (MicroPython).
-
-Wraps ``machine.PWM`` and provides a microsecond-based duty-cycle API so
-that higher layers never need to care about raw duty counts or timer
-resolution.
-
-Supported MicroPython firmware: v1.15+ (ESP-IDF based builds that expose
-``PWM.duty_u16()``).  Older builds that only expose ``PWM.duty()``
-(0-1023) are also handled automatically via the ``_duty_fn`` detection
-performed in ``__init__``.
-"""
+"""Low-level PWM hardware abstraction layer for ESP32 (MicroPython)."""
 
 from machine import Pin, PWM  # noqa: E402  (MicroPython built-in)
 

@@ -1,9 +1,4 @@
-"""5-axis robotic arm controller.
-
-Instantiates one :class:`ServoHAL` per axis using the pin assignments and
-limits defined in :mod:`arm.config`, and exposes a clean joint-level API
-for the live control loop.
-"""
+"""5-axis robotic arm controller."""
 
 from . import config
 from .hal.servo_hal import ServoHAL

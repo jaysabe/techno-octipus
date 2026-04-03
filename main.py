@@ -1,35 +1,4 @@
-"""ESP32 live loop – 5-axis robotic arm.
-
-Entry point for MicroPython on ESP32.  Rename to ``main.py`` (or keep as
-``main.py``) so that the firmware executes it automatically on boot.
-
-Architecture
-------------
-::
-
-    main.py  (this file – live control loop)
-        └── arm.arm_controller.RoboticArm
-                └── arm.servo.Servo  ×5
-                        └── arm.hal.servo_hal.ServoHAL
-                                └── arm.hal.pwm_hal.PWMChannel
-                                        └── machine.PWM  (ESP32 hardware)
-
-The loop structure is intentionally minimal so that application-specific
-command sources (UART, Wi-Fi socket, BLE, etc.) can be plugged in where
-the ``_read_command`` stub is.
-
-Wiring (default – see arm/config.py to customise)
--------------------------------------------------
-=============  =======  =========
-Servo          Joint    ESP32 GPIO
-=============  =======  =========
-Base           0        13
-Shoulder       1        12
-Elbow          2        14
-Wrist pitch    3        27
-Wrist roll     4        26
-=============  =======  =========
-"""
+"""ESP32 live loop – entry point for the 5-axis robotic arm."""
 
 import time
 
