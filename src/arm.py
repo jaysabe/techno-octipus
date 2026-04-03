@@ -1,36 +1,17 @@
-# arm.py – Servo / motor helpers for a multi-joint robotic arm on ESP32
-#
-# Each joint is driven by a PWM signal on an output pin.
-# Servo pulse range: 500 µs (0°) – 2500 µs (180°)  @ 50 Hz
-#
-# Wiring assumption (adjust PIN_* constants to match your board):
-#   BASE    → GPIO 13
-#   SHOULDER → GPIO 12
-#   ELBOW   → GPIO 14
-#   GRIPPER → GPIO 27
+# arm.py – Servo/motor helpers for a multi-joint robotic arm on ESP32
 
 from machine import Pin, PWM
 import utime
 
-# ---------------------------------------------------------------------------
-# Pin assignments – update these to match your physical wiring
-# ---------------------------------------------------------------------------
 PIN_BASE      = 13
 PIN_SHOULDER  = 12
 PIN_ELBOW     = 14
 PIN_GRIPPER   = 27
 
-PWM_FREQ      = 50          # Hz  (standard servo frequency)
-# MicroPython PWM.duty() accepts 0–1023 (10-bit range).
-# At 50 Hz: duty 40 ≈ 500 µs pulse → 0°, duty 115 ≈ 2500 µs pulse → 180°
+PWM_FREQ      = 50          # Hz
 DUTY_MIN      = 40          # 0°  position
 DUTY_MAX      = 115         # 180° position
 MOVE_DELAY_MS = 300         # ms to wait after each move so the servo settles
-
-
-# ---------------------------------------------------------------------------
-# Joint class
-# ---------------------------------------------------------------------------
 
 class Joint:
     """A single servo-driven arm joint."""
@@ -40,8 +21,6 @@ class Joint:
         self._pwm = PWM(Pin(pin), freq=PWM_FREQ)
         self._angle = 90        # assume neutral on startup
         self.move(self._angle)  # drive to neutral
-
-    # ------------------------------------------------------------------
 
     def move(self, angle: int):
         """Move to *angle* degrees (0–180).  Clamps out-of-range values."""
@@ -63,10 +42,6 @@ class Joint:
         return "Joint({}, {}°)".format(self.name, self._angle)
 
 
-# ---------------------------------------------------------------------------
-# Arm class – groups all joints and exposes high-level moves
-# ---------------------------------------------------------------------------
-
 class Arm:
     """Four-joint robotic arm controller."""
 
@@ -75,10 +50,6 @@ class Arm:
         self.shoulder = Joint("shoulder", PIN_SHOULDER)
         self.elbow    = Joint("elbow",    PIN_ELBOW)
         self.gripper  = Joint("gripper",  PIN_GRIPPER)
-
-    # ------------------------------------------------------------------
-    # Low-level joint moves
-    # ------------------------------------------------------------------
 
     def move_base(self, angle: int):
         self.base.move(angle)
@@ -94,10 +65,6 @@ class Arm:
 
     def close_gripper(self):
         self.gripper.move(0)
-
-    # ------------------------------------------------------------------
-    # High-level sequences
-    # ------------------------------------------------------------------
 
     def home(self):
         """Return all joints to the neutral 90° position."""
