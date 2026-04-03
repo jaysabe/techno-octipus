@@ -1,0 +1,27 @@
+{
+  "name": "techno-octipus",
+  "version": "1.0.0",
+  "description": "mechatronics practice and source code for arm project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaysabe/techno-octipus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jaysabe/techno-octipus/issues"
+  },
+  "homepage": "https://github.com/jaysabe/techno-octipus#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "husky": "^9.1.7"
+  }
+}
