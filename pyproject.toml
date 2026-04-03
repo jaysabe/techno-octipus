@@ -1,0 +1,19 @@
+[tool.ruff]
+# Target MicroPython source in src/
+src = ["src"]
+line-length = 88
+
+[tool.ruff.lint]
+# E/W: pycodestyle errors and warnings
+# F: Pyflakes (undefined names, unused imports, etc.)
+# I: isort (import ordering)
+# B: flake8-bugbear (likely bugs and design issues)
+select = ["E", "W", "F", "I", "B"]
+
+# F401: 'module' imported but unused – MicroPython stubs may not be resolvable
+# in a standard CPython environment, so suppress false positives for
+# top-level machine/utime imports that are intentionally used at runtime.
+ignore = ["F401"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["machine", "utime"]
